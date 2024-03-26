@@ -28,3 +28,24 @@ private:
     int doodlebugsNum;
     int timeSteps;
 };
+
+class Organism { 
+public:
+    virtual void moveAhead(); 
+    virtual bool starve() {return false;} 
+    virtual void breeding() = 0; 
+    virtual int getOrganism() = 0; 
+    void getNextCell(int direction, int& theRow, int& theColumn);
+    bool isWithinGrid(int theRow, int theColumn);
+    vector<int> getEmptyCells(int theRow, int theColumn);
+    Organism(Field* theField, int theRow, int theColumn) : field(theField), rowPosition(theRow), columnPosition(theColumn), breedeDuration(0), 
+    totalLife(theField->getTimeSteps()) {}
+    Organism() : field(nullptr), rowPosition(0), columnPosition(0), breedeDuration(0), totalLife(0) {}
+
+protected:
+    Field* field;
+    int rowPosition;
+    int columnPosition;
+    int breedeDuration;
+    int totalLife;
+};
