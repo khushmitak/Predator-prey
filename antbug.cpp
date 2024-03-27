@@ -49,3 +49,24 @@ protected:
     int breedeDuration;
     int totalLife;
 };
+
+class DoodleBug : public Organism { 
+public:
+    virtual int getOrganism() {return DOODLEBUG;} 
+    virtual void moveAhead(); 
+    virtual void breeding(); 
+    virtual bool starve() {return starveDuration == 3;} 
+    DoodleBug(Field* theField, int theRow, int theColumn) : Organism(theField, theRow, theColumn), starveDuration(0) {}
+    DoodleBug() : Organism(), starveDuration(0) {}
+private:
+    int starveDuration;
+};
+
+class Ant : public Organism { 
+public:
+    virtual int getOrganism() {return ANT;} 
+    virtual void breeding(); 
+    virtual void moveAhead(); 
+    Ant(Field* theField, int theRow, int theColumn) : Organism(theField, theRow, theColumn) {}
+    Ant() : Organism(){};
+};
