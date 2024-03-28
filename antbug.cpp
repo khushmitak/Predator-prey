@@ -70,3 +70,117 @@ public:
     Ant(Field* theField, int theRow, int theColumn) : Organism(theField, theRow, theColumn) {}
     Ant() : Organism(){};
 };
+
+// Field class begins
+void Field::setOrganisms() {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++)
+            grid[i][j] = nullptr;
+    }
+    // assigning random positions to ants and doodlebugs
+    srand(time(0));
+    int antsCount = 0;
+    while (antsCount < antsNum){
+        int i = getRandomNumber(SIZE);
+        int j = getRandomNumber(SIZE);
+        if (grid[i][j] != nullptr) 
+        continue;
+        grid[i][j] = new Ant(this, i, j);
+        antsCount++;
+    }
+
+    int doodleBugsCount = 0;
+    while (doodleBugsCount < doodlebugsNum) {
+        int i = getRandomNumber(SIZE);
+        int j = getRandomNumber(SIZE);
+        if (grid[i][j] != nullptr) 
+        continue;
+        grid[i][j] = new DoodleBug(this, i, j);
+        doodleBugsCount++;
+    }
+    printOutput(); 
+}
+
+void Field::startSimulation() {
+    cout << "Press the enter key for next time step after every step \n";
+    char enter;
+    cin.get(enter);
+
+    if (enter != '\n') {
+        cout << "Invalid key entered. \n";
+        cout << "The simulation is now ended. \n";
+        exit(1);
+    }
+
+    while (enter == '\n') {
+        timeSteps++;
+        //Moving the doodlebugs and ants
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (grid[i][j] == nullptr)
+                    continue;
+                if (grid[i][j]->getOrganism() == DOODLEBUG)
+                    grid[i][j]->moveAhead();
+            }
+        }
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (grid[i][j] == nullptr)
+                    continue;
+                if (grid[i][j]->getOrganism() == ANT)
+                    grid[i][j]->moveAhead();
+            }
+        }
+        //Breeding 
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (grid[i][j] == nullptr)
+                    continue;
+                grid[i][j]->breeding();
+            }
+        }
+        //remove the starving doodlebugs
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (grid[i][j] == nullptr)
+                    continue;
+                if (grid[i][j]->starve()) {
+                    delete grid[i][j];
+                    grid[i][j] = nullptr;
+                }
+            }
+        }
+        printOutput(); 
+
+        cin.get(enter);
+        if (enter != '\n') {
+            cout << "Invalid key entered. \n";
+            cout << "The simulation is now ended. \n";
+            exit(1);
+        }
+    }
+}
+
+void Field::printOutput() {
+    for (auto & row : grid) {
+        for (auto organism : row) {
+            if (organism == nullptr)
+                cout << "- ";
+            else if (organism->getOrganism() == ANT)
+                cout << "o ";
+            else
+                cout << "X ";
+        }
+        cout << endl;
+    }
+}
+
+Field::~Field() {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (grid[i][j] != nullptr)
+                delete grid[i][j];
+        }
+    }
+}
+// Field class ends
