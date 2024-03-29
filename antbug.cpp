@@ -184,3 +184,63 @@ Field::~Field() {
     }
 }
 // Field class ends
+
+//Organism class begins
+void Organism::moveAhead() {
+    totalLife++;
+    breedeDuration++;
+    int theRow = rowPosition;
+    int theColumn = columnPosition;
+    int direction = field->getRandomNumber(4,1); // 4 is the total possible directions
+    getNextCell(direction, theRow, theColumn);
+
+    if (isWithinGrid(theRow, theColumn)) {
+        if (field->grid[theRow][theColumn] != nullptr) {
+            return;
+        }
+        else {
+            field->grid[theRow][theColumn] = this; // moves when next cell is empty
+            field->grid[rowPosition][columnPosition] = nullptr;
+            rowPosition = theRow;
+            columnPosition = theColumn;
+        }
+    }
+}
+
+void Organism::getNextCell(int direction, int& theRow, int& theColumn) {
+    if (direction == 1) {
+        theRow--; // upwards direction
+    }
+    else if (direction == 2) {
+        theRow++; // downwards direction
+    }
+    else if (direction == 3) {
+        theColumn--; // left direction
+    }
+    else if (direction == 4) {
+        theColumn++; // right direction
+    }
+    else {
+        cout << "Wrong direction \n";
+        exit(1);
+    }
+}
+
+bool Organism::isWithinGrid(int theRow, int theColumn) {
+    return ((theRow >= 0) && (theRow < SIZE) && (theColumn >= 0) && (theColumn < SIZE));
+}
+
+vector<int> Organism::getEmptyCells(int row, int column) {
+
+    vector<int> nextEmpty;
+    for (int direction = 1; direction <= 4; direction++) {
+        int tempR = row;
+        int tempC = column;
+        getNextCell(direction, tempR, tempC);
+
+        if ((isWithinGrid(tempR, tempC)) && (field->grid[tempR][tempC] == nullptr))
+            nextEmpty.push_back(direction);
+    }
+    return nextEmpty;
+}
+// Organism class ends
