@@ -244,3 +244,58 @@ vector<int> Organism::getEmptyCells(int row, int column) {
     return nextEmpty;
 }
 // Organism class ends
+
+//Doodlebug class begins
+void DoodleBug::moveAhead() {
+    if (this->totalLife == field->getTimeSteps())
+        return;
+    //check for adjacent ants
+    vector<int> adjacentAnts;
+
+    for (int direction = 1; direction <= 4; direction++) {
+        int row = rowPosition;
+        int column = columnPosition;
+        getNextCell(direction, row, column);
+        if ((isWithinGrid(row, column)) && (field->grid[row][column] != nullptr)
+        && (field->grid[row][column]->getOrganism() == ANT))
+            adjacentAnts.push_back(direction);
+    }
+
+    int row = rowPosition;
+    int column = columnPosition;
+    //eat the adjacent ants, if any
+    if (!(adjacentAnts.empty())){
+        int randomPosition = field->getRandomNumber(adjacentAnts.size());
+        int direction = adjacentAnts[randomPosition];
+        getNextCell(direction, row, column);
+
+        delete field->grid[row][column];
+        field->grid[row][column] = this;
+        field->grid[rowPosition][columnPosition] = nullptr;
+        rowPosition = row;
+        columnPosition = column;
+        totalLife++;
+        breedeDuration++;
+        starveDuration = 0;
+    }
+    else {
+        Organism::moveAhead(); // if no ants, move to next cell
+        starveDuration++;
+    }
+}
+
+void DoodleBug::breeding() {
+    if (breedeDuration >= 8) { // 8 is the doodlebug breed period
+        int row = rowPosition;
+        int column = columnPosition;
+        vector<int> nextEmpty = getEmptyCells(row, column);
+
+        if (!(nextEmpty.empty())) {
+            int randomPosition = field->getRandomNumber(nextEmpty.size());
+            int direction = nextEmpty[randomPosition];
+            getNextCell(direction, row, column);
+            field->grid[row][column] = new DoodleBug(field, row, column);
+            breedeDuration = 0;
+        }
+    }
+}
