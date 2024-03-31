@@ -299,3 +299,36 @@ void DoodleBug::breeding() {
         }
     }
 }
+
+//Doodlebug class ends
+
+// Ant class begins
+void Ant::moveAhead() {
+    if (this->totalLife == field->getTimeSteps()) {
+        return;
+    }
+    else
+        Organism::moveAhead();
+}
+
+void Ant::breeding() {
+    if (this->breedeDuration >= 3) { // 3 is the breeding period for ants
+        int row= rowPosition;
+        int column = columnPosition;
+        vector<int> nextEmpty = getEmptyCells(row, column);
+        if (!(nextEmpty.empty())) {
+            int randomIndex = field->getRandomNumber(nextEmpty.size());
+            int direction = nextEmpty[randomIndex];
+            getNextCell(direction, row, column);
+            field->grid[row][column] = new Ant(field, row, column);
+            breedeDuration = 0;
+        }
+    }
+}
+// Ant class ends
+
+int main() {
+    Field simulation(5, 100);
+    simulation.startSimulation(); // plays the simulation as long as enter is pressed every step
+    return 0;
+}
